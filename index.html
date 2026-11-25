@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KiniCuan v2.0 — Website Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-soft:#f3f8ff;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#64748b;
+    --accent:#2563eb;
+    --accent-deep:#1d4ed8;
+    --accent-soft:rgba(37,99,235,.10);
+    --accent2:#0ea5e9;
+    --border:rgba(15,23,42,.10);
+    --danger:#dc2626;
+    --danger-soft:rgba(220,38,38,.10);
+    --success:#059669;
+    --success-soft:rgba(5,150,105,.10);
+    --radius:16px;
+    --shadow:0 1px 3px rgba(15,23,42,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Red Hat Display',system-ui,-apple-system,Segoe UI,sans-serif;
+    background:linear-gradient(180deg,#eaf3ff 0%,#ffffff 260px);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .shell{max-width:460px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:0 0 24px rgba(15,23,42,.06)}
+  .hidden{display:none !important}
+
+  /* ---------- Splash ---------- */
+  #splash{position:fixed;inset:0;z-index:50;background:linear-gradient(180deg,#ffffff 0%,#eaf3ff 100%);display:flex;align-items:center;justify-content:center;padding:24px}
+  .brand-lockup{text-align:center;max-width:340px;width:100%}
+  .logo-mark{width:84px;height:84px;border-radius:24px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;box-shadow:0 12px 30px rgba(37,99,235,.28)}
+  .logo-mark svg{width:44px;height:44px}
+  .brand-name{font-size:30px;font-weight:800;letter-spacing:-.5px}
+  .brand-name span{color:var(--accent)}
+  .brand-tag{color:var(--muted);font-size:14px;margin-top:8px}
+  .verify-line{margin-top:34px;font-size:14px;color:var(--muted)}
+  .dots{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}
+  .dots i{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:bounce 1.1s infinite ease-in-out}
+  .dots i:nth-child(2){animation-delay:.15s}
+  .dots i:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+
+  /* ---------- Auth ---------- */
+  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+  .auth-toggle{display:flex;background:var(--bg-soft);border-radius:12px;padding:4px;margin-bottom:20px}
+  .auth-toggle button{flex:1;border:0;background:transparent;padding:10px 0;border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+  .auth-toggle button.active{background:var(--card);color:var(--accent-deep);box-shadow:var(--shadow)}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:14.5px;background:#fff;color:var(--text);outline:none}
+  .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .check-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:4px 0 16px}
+  .check-row input{width:16px;height:16px;accent-color:var(--accent)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 16px;border-radius:12px;border:1px solid transparent;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .08s ease,box-shadow .15s ease}
+  .btn:active{transform:scale(.985)}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.25)}
+  .btn-primary:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+  .btn-secondary{background:var(--card);border-color:var(--border);color:var(--text)}
+  .btn-soft{background:var(--accent-soft);color:var(--accent-deep);border:1px solid var(--accent)}
+  .btn-danger{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(220,38,38,.3)}
+  .form-msg{font-size:12.5px;margin-top:10px;min-height:18px}
+  .form-msg.err{color:var(--danger)}
+  .form-msg.ok{color:var(--success)}
+  .demo-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.5}
+
+  /* ---------- App shell ---------- */
+  #app{min-height:100vh;display:flex;flex-direction:column}
+  header.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .tb-brand{display:flex;align-items:center;gap:10px}
+  .tb-logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center}
+  .tb-logo svg{width:20px;height:20px}
+  .tb-brand b{font-size:16px;display:block;line-height:1.1}
+  .tb-brand small{font-size:11px;color:var(--muted)}
+  .tb-pills{display:flex;gap:6px}
+  .pill{display:inline-flex;align-items:center;gap:5px;background:var(--accent-soft);color:var(--accent-deep);font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px}
+  .pill svg{width:13px;height:13px}
+  main.views{flex:1;padding:16px 16px 96px}
+  .view{display:none}
+  .view.active{display:block;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* bottom nav */
+  nav.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:#fff;border-top:1px solid var(--border);display:flex;z-index:25;padding:6px 4px calc(8px + env(safe-area-inset-bottom))}
+  nav.bottom button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-family:inherit;font-size:10.5px;font-weight:600;color:var(--muted);cursor:pointer}
+  nav.bottom button svg{width:21px;height:21px}
+  nav.bottom button.active{color:var(--accent-deep)}
+
+  /* cards */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .card h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card h3 svg{width:17px;height:17px;color:var(--accent)}
+  .card .sub{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-deep);margin-bottom:6px}
+
+  /* captcha */
+  .captcha-box{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;background:var(--bg-soft);border:1px dashed var(--accent);border-radius:14px;padding:16px;margin:14px 0}
+  .captcha-box span{font-size:28px;font-weight:800;letter-spacing:6px;font-family:'Red Hat Display',monospace;user-select:none;display:inline-block}
+  .captcha-refresh{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:4px}
+  .captcha-refresh svg{width:16px;height:16px}
+  .input-row{display:flex;gap:8px}
+  .input-row input{flex:1;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:15px;letter-spacing:2px;outline:none;text-transform:uppercase}
+  .input-row input:focus{border-color:var(--accent)}
+  .captcha-msg{font-size:13px;margin-top:10px;min-height:18px;font-weight:600}
+  .captcha-msg.ok{color:var(--success)}
+  .captcha-msg.err{color:var(--danger)}
+
+  /* check-in */
+  .day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:14px 0}
+  .day-chip{border:1px solid var(--border);border-radius:12px;padding:8px 2px;text-align:center;background:#fff}
+  .day-chip .d{font-size:10.5px;color:var(--muted);font-weight:600}
+  .day-chip .r{font-size:11.5px;font-weight:800;margin-top:3px}
+  .day-chip.done{background:var(--success-soft);border-color:var(--success)}
+  .day-chip.done .r{color:var(--success)}
+  .day-chip.today{border-color:var(--accent);background:var(--accent-soft)}
+
+  /* mission / chat */
+  .mission-row{display:flex;align-items:center;gap:12px;padding:10px 0}
+  .mission-ico{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex:none}
+  .mission-ico svg{width:20px;height:20px;color:var(--accent)}
+  .mission-row .txt{flex:1}
+  .mission-row .txt b{font-size:13.5px;display:block}
+  .mission-row .txt small{font-size:12px;color:var(--muted)}
+  .chat-box{height:170px;overflow-y:auto;background:var(--bg-soft);border-radius:12px;padding:10px;margin:12px 0;display:flex;flex-direction:column;gap:8px}
+  .chat-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.45}
+  .chat-msg.bot{background:#fff;border:1px solid var(--border);align-self:flex-start}
+  .chat-msg.me{background:var(--accent);color:#fff;align-self:flex-end}
+
+  /* shop */
+  .pkg{border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;background:#fff}
+  .pkg.featured{border-color:var(--accent);background:linear-gradient(180deg,var(--accent-soft),#fff)}
+  .pkg-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .pkg-top b{font-size:15px}
+  .price{font-size:17px;font-weight:800;color:var(--accent-deep)}
+  .pkg ul{margin:10px 0 12px 18px;font-size:12.5px;color:var(--muted);line-height:1.7}
+  .badge-perm{background:var(--success-soft);color:var(--success);font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px}
+
+  /* withdraw */
+  .limit-note{background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-deep);font-size:12.5px;border-radius:12px;padding:10px 12px;margin-bottom:14px;line-height:1.5}
+  select.full{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-family:inherit;font-size:14.5px;background:#fff;outline:none}
+  .code-result{background:var(--success-soft);border:1px solid var(--success);border-radius:12px;padding:14px;margin-top:14px}
+  .code-result .big{font-size:20px;font-weight:800;letter-spacing:1px;color:var(--success);margin:8px 0}
+
+  /* invite page */
+  .invite-link-box{background:var(--bg-soft);border:1px dashed var(--accent);border-radius:12px;padding:12px;margin:12px 0;word-break:break-all;font-size:13px;line-height:1.6}
+  .share-row{display:flex;gap:8px;flex-wrap:wrap}
+  .share-row .btn{flex:1;min-width:140px}
+  .req-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+  .req-row:last-child{border-bottom:0}
+  .req-pill{margin-left:auto;font-size:11px;font-weight:800;padding:4px 11px;border-radius:999px;white-space:nowrap}
+  .req-pill.ok{background:var(--success-soft);color:var(--success)}
+  .req-pill.no{background:var(--danger-soft);color:var(--danger)}
+  .req-count{font-size:13px;color:var(--muted);margin-top:8px}
+  /* history */
+  .hist-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .hist-item:last-child{border-bottom:0}
+  .hist-ico{width:34px;height:34px;border-radius:10px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;flex:none}
+  .hist-ico svg{width:16px;height:16px;color:var(--accent)}
+  .hist-item .ht{flex:1}
+  .hist-item .ht b{font-size:13.5px;display:block}
+  .hist-item .ht small{font-size:11.5px;color:var(--muted)}
+  .hist-amt{font-size:13px;font-weight:800}
+  .hist-amt.pos{color:var(--success)}
+  .hist-amt.neg{color:var(--danger)}
+  .empty{color:var(--muted);font-size:13px;text-align:center;padding:28px 10px}
+
+  /* profile */
+  .prof-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .prof-head b{font-size:17px;display:block}
+  .prof-head small{color:var(--muted);font-size:12.5px}
+  .stat-row{display:flex;gap:10px;margin-bottom:14px}
+  .stat{flex:1;background:var(--bg-soft);border-radius:12px;padding:12px;text-align:center}
+  .stat b{font-size:17px;display:block}
+  .stat small{font-size:11px;color:var(--muted)}
+  .prog{height:8px;border-radius:99px;background:var(--bg-soft);overflow:hidden;margin:8px 0 4px}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px}
+  .prof-line{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid var(--border)}
+  .prof-line span{color:var(--muted)}
+  .prof-line b{font-weight:600;text-align:right}
+
+  /* block overlay */
+  #blockOverlay{position:fixed;inset:0;z-index:60;background:rgba(243,248,255,.97);display:flex;align-items:center;justify-content:center;padding:24px}
+  .block-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:26px 22px;max-width:360px;width:100%;text-align:center;box-shadow:0 18px 50px rgba(15,23,42,.12)}
+  .block-ico{width:64px;height:64px;border-radius:50%;background:var(--danger-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+  .block-ico svg{width:30px;height:30px;color:var(--danger)}
+  .block-card h2{font-size:18px;margin-bottom:10px}
+  .block-card p{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+  .block-card .input-row{margin-bottom:10px}
+
+  /* toast */
+  #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:all .25s ease;z-index:80;max-width:88%;text-align:center}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.ok{background:var(--success)}
+  #toast.err{background:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- ================= SPLASH + AUTH ================= -->
+<div id="splash">
+  <div class="brand-lockup">
+    <div id="brandBlock">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 11l8-4.5M12 11v9M12 11L4 6.5"/></svg>
+      </div>
+      <div class="brand-name">Kini<span>Cuan</span></div>
+      <div class="brand-tag">Ketik captcha, kumpulkan saldo, kelola dengan mudah</div>
+      <div class="verify-line">Memverifikasi KiniCuan<span class="dots"><i></i><i></i><i></i></span></div>
+    </div>
+
+    <div id="authPanel" class="auth-card hidden">
+      <div class="eyebrow" style="text-align:center">Selamat datang di KiniCuan</div>
+      <div class="auth-toggle">
+        <button type="button" id="tabLogin" class="active">Masuk</button>
+        <button type="button" id="tabRegister">Daftar</button>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="field"><label>Email</label><input type="email" id="lgEmail" placeholder="nama@email.com" autocomplete="email"></div>
+        <div class="field"><label>Kata Sandi</label><input type="password" id="lgPass" placeholder="Kata sandi" autocomplete="current-password"></div>
+        <label class="check-row"><input type="checkbox" id="lgRemember"> Simpan kata sandi agar tidak perlu mengetik ulang</label>
+        <button class="btn btn-primary" type="submit">Masuk</button>
+        <div class="form-msg err" id="loginMsg"></div>
+      </form>
+
+      <form id="regForm" class="hidden" novalidate>
+        <div class="field"><label>Nama Lengkap</label><input type="text" id="rgName" placeholder="Nama kamu"></div>
+        <div class="field"><label>Email</label><input type="email" id="rgEmail" placeholder="nama@email.com"></div>
+        <div class="field"><label>Kata Sandi</label><input type="password" id="rgPass" placeholder="Minimal 6 karakter"></div>
+        <div class="field"><label>Konfirmasi Kata Sandi</label><input type="password" id="rgPass2" placeholder="Ulangi kata sandi"></div>
+        <div class="field"><label>Nomor Telepon</label><input type="tel" id="rgPhone" placeholder="08xxxxxxxxxx"></div>
+        <button class="btn btn-primary" type="submit">Konfirmasi & Daftar</button>
+        <div class="form-msg err" id="regMsg"></div>
+      </form>
+
+      <div class="demo-note">Prototipe demo — data tersimpan di perangkat ini (localStorage). Bukan transaksi pembayaran sungguhan.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="tb-brand">
+      <div class="tb-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 11l8-4.5M12 11v9M12 11L4 6.5"/></svg>
+      </div>
+      <div><b>KiniCuan</b><small id="tbUser">Pengguna</small></div>
+    </div>
+    <div class="tb-pills">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.8 1.8 0 1 1 0 3.6h-3a1.8 1.8 0 1 0 0 3.6h4.5"/></svg><span id="tbBalance">0</span></span>
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.2l1-5.8L3.5 9.2l5.9-.9L12 3z"/></svg>LV <span id="tbLevel">1</span></span>
+    </div>
+  </header>
+
+  <main class="views">
+    <!-- BERANDA -->
+    <section class="view active" id="view-home">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h4M7 13h10M7 17h6"/></svg>Ketik Captcha</h3>
+        <div class="sub" id="captchaRewardNote">Ketikan 5 digit huruf dan angka yang tampil dengan benar.</div>
+        <div class="captcha-box">
+          <span id="captchaText">-----</span>
+          <button class="captcha-refresh" type="button" id="captchaRefresh" title="Ulang kode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 4v5h-5"/></svg>
+          </button>
+        </div>
+        <div class="input-row">
+          <input type="text" id="captchaInput" maxlength="5" placeholder="Ketik kode di atas" autocomplete="off">
+          <button class="btn btn-primary" id="captchaBtn" style="width:auto;padding:12px 18px">Konfirmasi</button>
+        </div>
+        <div class="captcha-msg" id="captchaMsg"></div>
+      </div>
+
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>Check-in Harian</h3>
+        <div class="sub">Check-in setiap hari untuk hadiah saldo yang meningkat.</div>
+        <div class="day-grid" id="dayGrid"></div>
+        <button class="btn btn-soft" id="checkinBtn">Check-in Hari Ini</button>
+      </div>
+
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-1L3 20l1.2-4.2A8.4 8.4 0 1 1 21 11.5z"/></svg>Misi Saluran</h3>
+        <div class="mission-row">
+          <div class="mission-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-7 18-2.5-7.5L3 11z"/></svg></div>
+          <div class="txt"><b>Gabung ke saluran resmi</b><small>Selesaikan misi ini untuk +200 dan +30 EXP</small></div>
+          <button class="btn btn-primary" id="missionBtn" style="width:auto;padding:9px 14px;font-size:13px">Gabung</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Bantuan Cepat</h3>
+        <div class="sub">Ketik perintah: saldo, level, tarik, bantuan, undang</div>
+        <div class="chat-box" id="chatBox">
+          <div class="chat-msg bot">Halo! Ketik <b>saldo</b> untuk melihat saldo, <b>level</b> untuk level kamu, atau <b>bantuan</b>.</div>
+        </div>
+        <div class="input-row">
+          <input type="text" id="chatInput" placeholder="Tulis pesan…" autocomplete="off">
+          <button class="btn btn-primary" id="chatBtn" style="width:auto;padding:12px 16px">Kirim</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- UNDANG -->
+    <section class="view" id="view-invite">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Undang Teman</h3>
+        <div class="sub">Undang minimal 3 teman agar syarat Tarik Saldo terpenuhi. Setiap teman yang terundang memberi <b>+50 EXP</b>.</div>
+        <div class="req-count">Teman yang diundang: <b id="inviteCount">0</b> dari 3</div>
+        <div class="prog"><i id="inviteBar" style="width:0%"></i></div>
+        <div class="invite-link-box" id="inviteLinkText">https://kini-cuan.com/daftar?ref=...</div>
+        <div class="share-row">
+          <button class="btn btn-soft" id="inviteCopyBtn" type="button">Salin Link</button>
+          <button class="btn btn-primary" id="inviteShareBtn" type="button">Bagikan ke WhatsApp</button>
+        </div>
+        <div class="captcha-msg" id="inviteMsg"></div>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>Cara Pakai Link Undangan</h3>
+        <ul style="margin-left:18px;font-size:13.5px;color:var(--muted);line-height:1.8">
+          <li>Tekan Salin Link, lalu kirim ke teman lewat chat atau grup WhatsApp.</li>
+          <li>Teman membuka link dan mendaftar lewat halaman Daftar.</li>
+          <li>Hitungan bertambah otomatis, dan EXP kamu bertambah 50 per teman.</li>
+          <li>Setelah mencapai 3 teman, syarat pertama Tarik Saldo selesai.</li>
+        </ul>
+      </div>
+    </section>
+    <!-- SHOP -->
+    <section class="view" id="view-shop">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/></svg>Shop Perpanjangan Waktu</h3>
+        <div class="sub">Jika waktu akun habis, akun diblokir dan harus memperpanjang waktu di sini. Semua paket dapat digunakan untuk mengetik captcha, check-in harian, dan tarik saldo sesuai batas level; saldo tetap aman meski website ditutup.</div>
+      </div>
+      <div id="pkgList"></div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.8 7.8 5.5 5.5 0 0 1 7.8-7.8zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>Kode Perpanjang Waktu</h3>
+        <div class="sub">Punya kode perpanjang waktu dari admin? Masukkan di sini.</div>
+        <div class="input-row">
+          <input type="text" id="extCodeInput" placeholder="Contoh: KINICUAN-7XZ9-KL2M" autocomplete="off">
+          <button class="btn btn-primary" id="extCodeBtn" style="width:auto;padding:12px 16px">Konfirmasi</button>
+        </div>
+        <div class="captcha-msg" id="extCodeMsg"></div>
+      </div>
+    </section>
+
+    <!-- TARIK -->
+    <section class="view" id="view-withdraw">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>Tarik Saldo</h3>
+        <div id="wdReqBox" style="margin:12px 0">
+          <div class="req-row"><span>Undang 3 teman lewat link undangan</span><span class="req-pill no" id="wdReq1">Belum</span></div>
+          <div class="req-row"><span>Gabung saluran WhatsApp resmi</span><span class="req-pill no" id="wdReq2">Belum</span></div>
+          <div class="req-row"><span>Check-in harian sampai hari ke-7</span><span class="req-pill no" id="wdReq3">Belum</span></div>
+        </div>
+        <div class="limit-note" id="wdLimitNote">Batas penarikan mengikuti level akun kamu.</div>
+        <div class="field"><label>Pilih Nominal</label>
+          <select class="full" id="wdNominal"></select>
+        </div>
+        <div class="field"><label>Nama Penerima</label><input type="text" id="wdName" placeholder="Nama sesuai rekening / e-wallet"></div>
+        <div class="field"><label>Nomor Rekening / Nomor E-Wallet</label><input type="text" id="wdAccount" placeholder="Nomor tujuan pencairan"></div>
+        <button class="btn btn-primary" id="wdBtn">Ajukan Penarikan</button>
+        <div class="captcha-msg" id="wdMsg"></div>
+        <div class="code-result hidden" id="wdResult">
+          <b>Kode unik penarikan kamu:</b>
+          <div class="big" id="wdCodeText">KC-000000</div>
+          <div style="font-size:12.5px;color:var(--muted);line-height:1.5">Kirim kode ini ke admin melalui WhatsApp untuk diverifikasi. Setiap kode hanya dipakai satu kali. Nominal mengikuti level dan saldo akun kamu.</div>
+          <button class="btn btn-soft" id="wdWaBtn" style="margin-top:12px">Kirim ke Admin WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIWAYAT -->
+    <section class="view" id="view-history">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3.5 2"/></svg>Riwayat Aktivitas</h3>
+        <div class="sub">Semua pemasukan, pengeluaran, dan penarikan tercatat di sini.</div>
+      </div>
+      <div class="card" id="histList"><div class="empty">Belum ada aktivitas.</div></div>
+    </section>
+
+    <!-- PROFIL -->
+    <section class="view" id="view-profile">
+      <div class="card">
+        <div class="prof-head">
+          <div class="avatar" id="profAvatar">K</div>
+          <div><b id="profName">Nama</b><small id="profEmail">email</small><br><small id="profPhone">—</small></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><b id="profBalance">0</b><small>Saldo</small></div>
+          <div class="stat"><b id="profLevel">1</b><small>Level</small></div>
+          <div class="stat"><b id="profExp">0</b><small>EXP</small></div>
+        </div>
+        <div class="eyebrow">Progress ke Level <span id="profNextLv">2</span></div>
+        <div class="prog"><i id="profProgBar" style="width:0%"></i></div>
+        <small style="font-size:11.5px;color:var(--muted)" id="profProgText">0 / 100 EXP</small>
+      </div>
+      <div class="card">
+        <div class="prof-line"><span>Batas tarik tertinggi</span><b id="profWdLimit">Rp 1.000</b></div>
+        <div class="prof-line"><span>Status premium</span><b id="profPremium">Belum premium</b></div>
+        <div class="prof-line"><span>Masa berlaku akun</span><b id="profExpiry">—</b></div>
+        <div class="prof-line"><span>Status blokir</span><b id="profStatus">Aktif</b></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Undangan Teman</div>
+        <div class="invite-link-box" id="profInviteLink">https://kini-cuan.com/daftar?ref=...</div>
+        <div class="share-row">
+          <button class="btn btn-soft" id="profInviteCopy" type="button">Salin Link Undangan</button>
+        </div>
+        <div class="req-count">Teman terundang: <b id="profInviteCount">0</b> dari 3</div>
+      </div>
+      <button class="btn btn-danger" id="logoutBtn">Keluar dari Akun</button>
+      <div class="demo-note">Prototipe demo KiniCuan — data disimpan lokal di perangkat ini dan tidak mengirim uang sungguhan.</div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button type="button" data-view="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Beranda</button>
+    <button type="button" data-view="invite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>Undang</button>
+    <button type="button" data-view="shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/></svg>Shop</button>
+    <button type="button" data-view="withdraw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></svg>Tarik</button>
+    <button type="button" data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3.5 2"/></svg>Riwayat</button>
+    <button type="button" data-view="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Profil</button>
+  </nav>
+</div>
+
+<!-- ================= BLOCK OVERLAY ================= -->
+<div id="blockOverlay" class="hidden">
+  <div class="block-card">
+    <div class="block-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+    </div>
+    <h2>Akun Anda Telah Diblokir</h2>
+    <p>Masa berlaku akun habis. Anda harus membeli perpanjangan waktu di Shop, atau masukkan kode perpanjang waktu yang sudah dimiliki.</p>
+    <button class="btn btn-primary" id="blockShopBtn" style="margin-bottom:12px">Buka Shop</button>
+    <div class="input-row">
+      <input type="text" id="blockCodeInput" placeholder="Masukkan kode perpanjang waktu" autocomplete="off">
+      <button class="btn btn-soft" id="blockCodeBtn" style="width:auto;padding:12px 14px">OK</button>
+    </div>
+    <div class="captcha-msg" id="blockCodeMsg"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============ CORE: storage, constants, helpers ============ */
+(function(){
+  var KEY='kinicuan_demo_v1';
+  var store=null;
+  function load(){
+    try{ store=JSON.parse(localStorage.getItem(KEY))||{account:null,profile:null}; }
+    catch(e){ store={account:null,profile:null}; }
+  }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(store)); }catch(e){} }
+  load();
+
+  var WD_LIMITS=[
+    {lv:1,max:1000,label:'Rp 1.000 — Level 1'},
+    {lv:5,max:5000,label:'Rp 5.000 — Level 5'},
+    {lv:15,max:10000,label:'Rp 10.000 — Level 15'},
+    {lv:50,max:25000,label:'Rp 25.000 — Level 50'},
+    {lv:100,max:100000,label:'Rp 100.000 — Level 100'}
+  ];
+  var EXP_NEED=[[2,100],[5,400],[15,1500],[50,6000],[100,20000]];
+
+  var EXT_PACKAGES=[
+    {key:'d2',days:2,price:15000,label:'2 Hari',featured:false,codes:['KINICUAN-7XZ9-KL2M','KINICUAN-A8B3-PQ7R','KINICUAN-ZZ4T-9WXY','KINICUAN-2KLM-8NOP','KINICUAN-QR6S-TU4V','KINICUAN-WX3Y-ZA9B','KINICUAN-HJ8K-LM2N','KINICUAN-5ZXY-WZ67','KINICUAN-BC4D-EF5G','KINICUAN-KL3M-NP5Q']},
+    {key:'d4',days:4,price:25000,label:'4 Hari',featured:false,codes:['KINICUAN-5ABC-DEF7','KINICUAN-PQ5R-ST6U','KINICUAN-CV3B-NM7Q','KINICUAN-9XYZ-1ABC','KINICUAN-LM4N-OP5Q','KINICUAN-7DEF-GH8I','KINICUAN-2RST-UV3W','KINICUAN-KL9M-N0OP','KINICUAN-HJ6K-LM3P','KINICUAN-QR7S-TU9V']},
+    {key:'d30',days:30,price:50000,label:'30 Hari',featured:false,codes:['KINICUAN-XZ8Y-AB2C','KINICUAN-3KLM-5NOP','KINICUAN-6PQR-8STU','KINICUAN-1ABC-3DEF','KINICUAN-9MNP-2QRS','KINICUAN-4WXY-7ZAQ','KINICUAN-JK5L-MN6P','KINICUAN-8BCD-FG9H','KINICUAN-2VWX-YZ45','KINICUAN-7RST-UV9W']},
+    {key:'d60',days:60,price:80000,label:'60 Hari',featured:false,codes:['KINICUAN-PQ3R-ST5V','KINICUAN-ZA6B-CD8E','KINICUAN-1LMN-3OPQ','KINICUAN-5DEF-GH7J','KINICUAN-9STU-VW2X','KINICUAN-BC5D-FG7H','KINICUAN-2PQR-4ST6U','KINICUAN-7JKL-MN9P','KINICUAN-1CDE-FG3H','KINICUAN-8WXY-ZA1B']},
+    {key:'perm',days:0,price:100000,label:'Permanen',permanent:true,featured:true,codes:['KINICUAN-QR2S-TU4V','KINICUAN-3MNO-PQ5R','KINICUAN-6GHI-JK8L','KINICUAN-9ABC-DE1F','KINICUAN-2RST-UW4X','KINICUAN-5ZAB-CD7E','KINICUAN-7LMN-PQ9R','KINICUAN-4DEF-GH6I','KINICUAN-KC99-SHOP','KINICUAN-SHOP628-TGQP']}
+  ];
+  var WD_CODES={
+    1000:['KC-001827','KC-002938','KC-003749','KC-004651','KC-005162','KC-006273','KC-007384','KC-008495','KC-009516','KC-010627'],
+    5000:['KC-112738','KC-123849','KC-134951','KC-145162','KC-156273','KC-167384','KC-178495','KC-189516','KC-190627','KC-201738'],
+    10000:['KC-213849','KC-224951','KC-235162','KC-246273','KC-257384','KC-268495','KC-279516','KC-280627','KC-291738','KC-302849'],
+    25000:['KC-314951','KC-325162','KC-336273','KC-347384','KC-358495','KC-369516','KC-370627','KC-381738','KC-392849','KC-403951'],
+    100000:['KC-415162','KC-426273','KC-437384','KC-448495','KC-459516','KC-460627','KC-471738','KC-482849','KC-493951','KC-504162']
+  };
+  var CHECKIN_REWARDS=[200,250,300,350,400,450,500];
+  var WA_ADMIN='628217611734';
+  var CHANNEL_URL='https://whatsapp.com/channel/0029Vb9OY4O6mYPNtxbT6B2j';
+
+  function levelOf(exp){var lv=1;for(var i=0;i<EXP_NEED.length;i++){if(exp>=EXP_NEED[i][1])lv=EXP_NEED[i][0];}return lv;}
+  function nextLevel(lv){var next=null;for(var i=0;i<EXP_NEED.length;i++){if(EXP_NEED[i][0]>lv&&(next===null||EXP_NEED[i][0]<next))next=EXP_NEED[i][0];}return next;}
+  function maxWithdraw(lv){var m=0;for(var i=0;i<WD_LIMITS.length;i++){if(lv>=WD_LIMITS[i].lv)m=WD_LIMITS[i].max;}return m;}
+  function isPremium(){var p=store.profile;return !!(p&&(p.extension.permanent||p.extension.renewed));}
+  function todayStr(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+  function fmtRp(n){return 'Rp '+n.toLocaleString('id-ID');}
+  function fmtTime(ts){var d=new Date(ts);return d.toLocaleDateString('id-ID')+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});}
+
+  function defaultProfile(name){
+    return {name:name,balance:0,exp:0,checkDay:0,lastCheckIn:'',missionJoined:false,invited:0,
+      extension:{until:Date.now()+24*3600*1000,permanent:false,renewed:false},usedExt:[],usedWd:[],history:[],withdrawals:[]};
+  }
+  function addHistory(p,type,text,amount){
+    p.history.unshift({ts:Date.now(),type:type,text:text,amount:amount||0});
+    if(p.history.length>200)p.history.length=200;
+  }
+  function toast(msg,kind){
+    var t=document.getElementById('toast');
+    t.textContent=msg;t.className=kind||'';t.classList.add('show');
+    clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},2200);
+  }
+
+  window.KC={
+    get store(){return store;},
+    save:save,
+    WD_LIMITS:WD_LIMITS,EXP_NEED:EXP_NEED,EXT_PACKAGES:EXT_PACKAGES,WD_CODES:WD_CODES,
+    CHECKIN_REWARDS:CHECKIN_REWARDS,WA_ADMIN:WA_ADMIN,CHANNEL_URL:CHANNEL_URL,
+    levelOf:levelOf,nextLevel:nextLevel,maxWithdraw:maxWithdraw,isPremium:isPremium,todayStr:todayStr,
+    fmtRp:fmtRp,fmtTime:fmtTime,defaultProfile:defaultProfile,addHistory:addHistory,toast:toast
+  };
+})();
+</script>
+
+<script>
+/* ============ AUTH + SPLASH ============ */
+(function(){
+  var splash=document.getElementById('splash');
+  var brandBlock=document.getElementById('brandBlock');
+  var authPanel=document.getElementById('authPanel');
+  var tabLogin=document.getElementById('tabLogin');
+  var tabReg=document.getElementById('tabRegister');
+  var loginForm=document.getElementById('loginForm');
+  var regForm=document.getElementById('regForm');
+
+  setTimeout(function(){
+    brandBlock.classList.add('hidden');
+    authPanel.classList.remove('hidden');
+  },1800);
+
+  function switchTab(reg){
+    tabLogin.classList.toggle('active',!reg);
+    tabReg.classList.toggle('active',reg);
+    regForm.classList.toggle('hidden',!reg);
+    loginForm.classList.toggle('hidden',reg);
+    document.getElementById('loginMsg').textContent='';
+    document.getElementById('regMsg').textContent='';
+  }
+  tabLogin.addEventListener('click',function(){switchTab(false);});
+  tabReg.addEventListener('click',function(){switchTab(true);});
+
+  loginForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var msg=document.getElementById('loginMsg');
+    var email=document.getElementById('lgEmail').value.trim().toLowerCase();
+    var pass=document.getElementById('lgPass').value;
+    var store=KC.store;
+    if(!email||!pass){msg.textContent='Isi email dan kata sandi dulu.';return;}
+    if(!store.account||store.account.email!==email||store.account.pass!==pass){
+      msg.textContent='Email atau kata sandi salah. Silakan daftar dulu jika belum punya akun.';return;
+    }
+    store.account.remember=document.getElementById('lgRemember').checked;
+    KC.save();
+    KC.startApp();
+  });
+
+  regForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var msg=document.getElementById('regMsg');
+    var name=document.getElementById('rgName').value.trim();
+    var email=document.getElementById('rgEmail').value.trim().toLowerCase();
+    var pass=document.getElementById('rgPass').value;
+    var pass2=document.getElementById('rgPass2').value;
+    var phone=document.getElementById('rgPhone').value.trim();
+    if(!name){msg.textContent('Nama lengkap wajib diisi.');return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){msg.textContent('Format email tidak valid.');return;}
+    if(pass.length<6){msg.textContent('Kata sandi minimal 6 karakter.');return;}
+    if(pass!==pass2){msg.textContent('Konfirmasi kata sandi tidak sama.');return;}
+    if(!/^08\d{8,13}$/.test(phone)){msg.textContent('Nomor telepon tidak valid (contoh: 081234567890).');return;}
+    var store=KC.store;
+    store.account={name:name,email:email,pass:pass,phone:phone,remember:true};
+    store.profile=KC.defaultProfile(name);
+    KC.addHistory(store.profile,'auth','Akun baru terdaftar sebagai '+name,0);
+    KC.save();
+    msg.className='form-msg ok';msg.textContent='Pendaftaran berhasil, masuk ke beranda…';
+    setTimeout(function(){KC.startApp();},600);
+  });
+})();
+</script>
+
+<script>
+/* ============ APP ROUTER + HEADER + BLOCKING ============ */
+(function(){
+  var app=document.getElementById('app');
+  var splash=document.getElementById('splash');
+  var overlay=document.getElementById('blockOverlay');
+  var navBtns=document.querySelectorAll('nav.bottom button');
+  var views=document.querySelectorAll('.view');
+  var blockOverride=false;
+
+  function refreshHeader(){
+    var p=KC.store.profile;if(!p)return;
+    document.getElementById('tbBalance').textContent=p.balance.toLocaleString('id-ID');
+    document.getElementById('tbLevel').textContent=KC.levelOf(p.exp);
+    document.getElementById('tbUser').textContent=p.name;
+  }
+  function showView(name){
+    views.forEach(function(v){v.classList.toggle('active',v.id==='view-'+name);});
+    navBtns.forEach(function(b){b.classList.toggle('active',b.dataset.view===name);});
+    if(name==='home')KC.renderHome();
+    if(name==='invite')KC.renderInvite();
+    if(name==='shop')KC.renderShop();
+    if(name==='withdraw')KC.renderWithdraw();
+    if(name==='history')KC.renderHistory();
+    if(name==='profile')KC.renderProfile();
+  }
+  navBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      if(KC.isBlocked() && !blockOverride)return;
+      showView(b.dataset.view);
+    });
+  });
+
+  KC.isBlocked=function(){
+    var p=KC.store.profile;if(!p)return false;
+    if(p.extension.permanent)return false;
+    return Date.now()>p.extension.until;
+  };
+  KC.checkBlock=function(){
+    if(!KC.store.profile)return;
+    if(blockOverride)return;
+    if(KC.isBlocked()){overlay.classList.remove('hidden');}
+    else{overlay.classList.add('hidden');}
+  };
+  KC.setBlockOverride=function(v){blockOverride=v;if(!v)KC.checkBlock();};
+  KC.startApp=function(){
+    splash.classList.add('hidden');
+    app.classList.remove('hidden');
+    refreshHeader();
+    KC.renderHome();
+    KC.checkBlock();
+  };
+  KC.refreshHeader=refreshHeader;
+  KC.showView=showView;
+
+  document.getElementById('blockShopBtn').addEventListener('click',function(){
+    overlay.classList.add('hidden');
+    KC.setBlockOverride(true);
+    showView('shop');
+  });
+  document.getElementById('blockCodeBtn').addEventListener('click',function(){
+    var code=document.getElementById('blockCodeInput').value.trim();
+    var ok=KC.redeemExtCode(code,document.getElementById('blockCodeMsg'));
+    if(ok){document.getElementById('blockCodeInput').value='';KC.setBlockOverride(false);KC.checkBlock();}
+  });
+  document.getElementById('blockCodeInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){e.preventDefault();document.getElementById('blockCodeBtn').click();}
+  });
+
+  document.getElementById('logoutBtn')&&document.getElementById('logoutBtn').addEventListener('click',function(){
+    var store=KC.store;
+    if(store.account&&!store.account.remember){store.account=null;}
+    KC.save();
+    location.reload();
+  });
+
+  window.addEventListener('load',function(){
+    var store=KC.store;
+    if(store.account&&store.profile){KC.startApp();}
+  });
+})();
+</script>
+
+<script>
+/* ============ HOME: captcha, check-in, mission, chat ============ */
+(function(){
+  var CHARSET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var current='';
+  function genCaptcha(){
+    var s='';for(var i=0;i<5;i++)s+=CHARSET[Math.floor(Math.random()*CHARSET.length)];
+    current=s;
+    var box=document.getElementById('captchaText');
+    box.textContent='';
+    s.split('').forEach(function(ch){
+      var sp=document.createElement('span');
+      sp.textContent=ch;
+      sp.style.transform='rotate('+(Math.floor(Math.random()*10)-5)+'deg)';
+      sp.style.color=Math.random()>.5?'#2563eb':'#0ea5e9';
+      box.appendChild(sp);
+    });
+  }
+  function verify(){
+    var p=KC.store.profile;if(!p)return;
+    if(KC.isBlocked()){KC.checkBlock();return;}
+    var input=document.getElementById('captchaInput');
+    var msg=document.getElementById('captchaMsg');
+    var val=input.value.trim().toUpperCase();
+    if(!val){msg.className='captcha-msg err';msg.textContent='Kode tidak boleh kosong.';return;}
+    var premium=KC.isPremium();
+    var reward=premium?500:100;
+    if(val===current){
+      p.balance+=reward;p.exp+=10;
+      KC.addHistory(p,'earn','Captcha benar (+'+reward+(premium?', member premium':'')+')',reward);
+      KC.save();
+      msg.className='captcha-msg ok';msg.textContent='Berhasil! Anda mendapatkan '+reward+(premium?' (premium)':'')+'.';
+      input.value='';
+      genCaptcha();
+      KC.refreshHeader();KC.renderCheckin();KC.updateCaptchaNote();
+      KC.toast('+'+reward,'ok');
+    }else{
+      msg.className='captcha-msg err';msg.textContent='Kode tidak sesuai. Silakan perhatikan huruf dan angkanya, lalu ketik ulang.';
+      input.value='';genCaptcha();
+    }
+  }
+  document.getElementById('captchaBtn').addEventListener('click',verify);
+  document.getElementById('captchaInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();verify();}});
+  document.getElementById('captchaRefresh').addEventListener('click',function(){
+    document.getElementById('captchaInput').value='';
+    document.getElementById('captchaMsg').textContent='';
+    genCaptcha();
+  });
+
+  function renderCheckin(){
+    var p=KC.store.profile;if(!p)return;
+    var grid=document.getElementById('dayGrid');
+    grid.innerHTML='';
+    KC.CHECKIN_REWARDS.forEach(function(r,i){
+      var day=i+1;
+      var chip=document.createElement('div');
+      chip.className='day-chip'+(day<=p.checkDay?' done':'')+(day===p.checkDay+1&&p.lastCheckIn!==KC.todayStr()?' today':'');
+      var d=document.createElement('div');d.className='d';d.textContent='Hari '+day;
+      var rv=document.createElement('div');rv.className='r';rv.textContent=r;
+      chip.appendChild(d);chip.appendChild(rv);grid.appendChild(chip);
+    });
+    var btn=document.getElementById('checkinBtn');
+    var doneToday=p.lastCheckIn===KC.todayStr();
+    btn.disabled=doneToday;
+    btn.textContent=doneToday?'Check-in selesai hari ini':'Check-in Hari Ini';
+  }
+  document.getElementById('checkinBtn').addEventListener('click',function(){
+    var p=KC.store.profile;if(!p||KC.isBlocked())return;
+    if(p.lastCheckIn===KC.todayStr()){KC.toast('Sudah check-in hari ini.');return;}
+    var idx=p.checkDay%7;
+    var reward=KC.CHECKIN_REWARDS[idx];
+    var day7=(idx===6);
+    p.checkDay+=1;
+    p.lastCheckIn=KC.todayStr();
+    p.balance+=reward;
+    p.exp+=20+(day7?100:0);
+    KC.addHistory(p,'checkin','Check-in hari ke-'+p.checkDay+' (+'+reward+', +20 EXP'+(day7?', bonus hari ke-7 +100 EXP':'')+')',reward);
+    KC.save();KC.refreshHeader();renderCheckin();
+    KC.toast('Check-in berhasil: +'+reward+' saldo, +20 EXP'+(day7?' (+100 EXP bonus)':''),'ok');
+  });
+
+  document.getElementById('missionBtn').addEventListener('click',function(){
+    var p=KC.store.profile;if(!p)return;
+    if(p.missionJoined){KC.toast('Misi ini sudah diselesaikan.');return;}
+    window.open(KC.CHANNEL_URL,'_blank');
+    p.missionJoined=true;p.balance+=200;p.exp+=30;
+    KC.addHistory(p,'mission','Gabung saluran resmi (+200, +30 EXP)',200);
+    KC.save();KC.refreshHeader();
+    document.getElementById('missionBtn').textContent='Selesai';
+    document.getElementById('missionBtn').disabled=true;
+    KC.toast('+200 saldo & +30 EXP','ok');
+  });
+
+  function chatReply(q){
+    var p=KC.store.profile;
+    switch(q){
+      case 'saldo':return 'Saldo Anda saat ini: '+p.balance.toLocaleString('id-ID')+'.';
+      case 'level':{var lv=KC.levelOf(p.exp);return 'Level Anda: '+lv+' · EXP: '+p.exp+' EXP.';}
+      case 'tarik':return 'Syarat tarik: undang 3 teman, gabung saluran resmi, dan check-in sampai hari ke-7. Cek menu Tarik Saldo.';
+      case 'bantuan':return 'Hubungi admin WhatsApp 08217611734 bila ada kendala.';
+      case 'undang':return 'Buka menu Undang untuk menyalin link undangan dan mengundang teman.';
+      default:return 'Perintah dikenali: saldo, level, tarik, bantuan, undang.';
+    }
+  }
+  function pushMsg(text,me){
+    var box=document.getElementById('chatBox');
+    var div=document.createElement('div');
+    div.className='chat-msg '+(me?'me':'bot');
+    div.textContent=text;
+    box.appendChild(div);box.scrollTop=box.scrollHeight;
+  }
+  function sendChat(){
+    var input=document.getElementById('chatInput');
+    var q=input.value.trim().toLowerCase();
+    if(!q)return;
+    pushMsg(q,true);input.value='';
+    setTimeout(function(){pushMsg(chatReply(q),false);},250);
+  }
+  document.getElementById('chatBtn').addEventListener('click',sendChat);
+  document.getElementById('chatInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sendChat();}});
+
+  function updateNote(){
+    var el=document.getElementById('captchaRewardNote');
+    if(!el)return;
+    if(KC.isPremium()){
+      el.innerHTML='Captcha benar memberi <b>500</b> (member premium — masa perpanjangan aktif).';
+    }else{
+      el.innerHTML='Captcha benar memberi <b>100</b>. Perpanjang waktu di menu Shop agar menjadi premium dan mendapat <b>500</b> setiap captcha.';
+    }
+  }
+  KC.renderHome=function(){
+    var p=KC.store.profile;if(!p)return;
+    genCaptcha();renderCheckin();updateNote();
+    var mb=document.getElementById('missionBtn');
+    if(p.missionJoined){mb.textContent='Selesai';mb.disabled=true;}
+  };
+  KC.renderCheckin=renderCheckin;
+  KC.updateCaptchaNote=updateNote;
+})();
+</script>
+<script>
+/* ============ INVITE FRIENDS PAGE ============ */
+(function(){
+  function inviteLink(){
+    var p=KC.store.profile;if(!p)return 'https://kini-cuan.com/daftar?ref=user';
+    var ref=(p.name||'user').toLowerCase().replace(/[^a-z0-9]+/g,'');
+    return 'https://kini-cuan.com/daftar?ref='+encodeURIComponent(ref||'user');
+  }
+  function renderInvite(){
+    var p=KC.store.profile;if(!p)return;
+    document.getElementById('inviteLinkText').textContent=inviteLink();
+    document.getElementById('inviteCount').textContent=p.invited||0;
+    document.getElementById('inviteBar').style.width=Math.min(100,Math.round(((p.invited||0)/3)*100))+'%';
+    var msg=document.getElementById('inviteMsg');
+    if((p.invited||0)>=3){
+      msg.className='captcha-msg ok';msg.textContent='Syarat undangan terpenuhi: 3 teman terundang.';
+    }else{
+      msg.className='captcha-msg err';msg.textContent='Belum lengkap: '+(3-(p.invited||0))+' teman lagi untuk memenuhi syarat tarik saldo.';
+    }
+  }
+  function copyText(text,cb){
+    function done(){cb&&cb();}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});
+    }else{fallback();}
+    function fallback(){
+      var ta=document.createElement('textarea');
+      ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');}catch(e){}
+      document.body.removeChild(ta);done();
+    }
+  }
+  document.getElementById('inviteCopyBtn').addEventListener('click',function(){
+    copyText(document.getElementById('inviteLinkText').textContent,function(){KC.toast('Link undangan disalin','ok');});
+  });
+  document.getElementById('inviteShareBtn').addEventListener('click',function(){
+    var p=KC.store.profile;if(!p)return;
+    if(KC.isBlocked()){KC.checkBlock();return;}
+    if((p.invited||0)>=3){KC.toast('Syarat undangan sudah terpenuhi (3/3)');return;}
+    var text='Halo! Gabung yuk di KiniCuan — bisa kumpulkan saldo dan tarik hadiah. Daftar lewat link ini ya: '+inviteLink();
+    window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+    p.invited=(p.invited||0)+1;
+    p.exp+=50;
+    KC.addHistory(p,'invite','Teman terundang ke-'+p.invited+' (+50 EXP)',0);
+    KC.save();KC.refreshHeader();renderInvite();
+    KC.toast('+1 teman terundang, +50 EXP','ok');
+  });
+  var pc=document.getElementById('profInviteCopy');
+  if(pc)pc.addEventListener('click',function(){
+    copyText(document.getElementById('profInviteLink').textContent,function(){KC.toast('Link undangan disalin','ok');});
+  });
+  KC.renderInvite=renderInvite;
+  KC.inviteLink=inviteLink;
+  KC.copyText=copyText;
+})();
+</script>
+
+<script>
+/* ============ SHOP + REDEEM EXT CODE ============ */
+(function(){
+  function benefits(){
+    return ['Bisa mengetik captcha untuk mengumpulkan saldo','Bisa ikut check-in harian','Bisa tarik saldo sesuai batas level masing-masing','Saldo dan data tetap aman meskipun website ditutup atau HP dimatikan'];
+  }
+  function renderShop(){
+    var list=document.getElementById('pkgList');
+    list.innerHTML='';
+    KC.EXT_PACKAGES.forEach(function(pkg){
+      var card=document.createElement('div');
+      card.className='pkg'+(pkg.featured?' featured':'');
+      var top=document.createElement('div');top.className='pkg-top';
+      var left=document.createElement('div');
+      var b=document.createElement('b');b.textContent=pkg.label;
+      left.appendChild(b);
+      if(pkg.permanent){var badge=document.createElement('span');badge.className='badge-perm';badge.textContent='Tidak ada blokir lagi';left.appendChild(badge);}
+      var price=document.createElement('div');price.className='price';price.textContent=KC.fmtRp(pkg.price);
+      top.appendChild(left);top.appendChild(price);
+      var ul=document.createElement('ul');
+      benefits().forEach(function(t){var li=document.createElement('li');li.textContent=t;ul.appendChild(li);});
+      var btn=document.createElement('button');btn.className='btn btn-primary';btn.style.marginTop='4px';
+      btn.textContent='Beli Sekarang';
+      btn.addEventListener('click',function(){buyPackage(pkg);});
+      card.appendChild(top);card.appendChild(ul);card.appendChild(btn);
+      list.appendChild(card);
+    });
+  }
+  function buyPackage(pkg){
+    var p=KC.store.profile;
+    var msg='Halo admin KiniCuan, saya mau membeli paket '+pkg.label+' seharga '+KC.fmtRp(pkg.price)+'. Nama akun: '+p.name+'. Silakan dibantu, terima kasih.';
+    window.open('https://wa.me/'+KC.WA_ADMIN+'?text='+encodeURIComponent(msg),'_blank');
+    KC.toast('Membuka WhatsApp admin…');
+  }
+  function redeem(code,msgEl){
+    code=(code||'').trim().toUpperCase();
+    if(!code){msgEl.className='captcha-msg err';msgEl.textContent='Kode tidak boleh kosong.';return false;}
+    var p=KC.store.profile;
+    var pkg=null;
+    for(var i=0;i<KC.EXT_PACKAGES.length;i++){
+      if(KC.EXT_PACKAGES[i].codes.indexOf(code)>-1){pkg=KC.EXT_PACKAGES[i];break;}
+    }
+    if(!pkg){msgEl.className='captcha-msg err';msgEl.textContent='Kode tidak sesuai. Periksa kembali huruf dan angka kodenya.';return false;}
+    if(p.usedExt.indexOf(code)>-1){msgEl.className='captcha-msg err';msgEl.textContent='Kode ini sudah dipakai sebelumnya.';return false;}
+    p.usedExt.push(code);
+    p.extension.renewed=true;
+    if(pkg.permanent){
+      p.extension.permanent=true;
+      KC.addHistory(p,'extend','Kode permanen ditebus — akun tidak akan diblokir lagi (kode '+code+')',0);
+    }else{
+      var base=(Date.now()>p.extension.until)?Date.now():p.extension.until;
+      p.extension.until=base+pkg.days*24*3600*1000;
+      KC.addHistory(p,'extend','Masa diperpanjang '+pkg.label+' (kode '+code+')',0);
+    }
+    KC.save();
+    msgEl.className='captcha-msg ok';msgEl.textContent='Kode benar! Paket '+pkg.label+' aktif. Status premium aktif — captcha kini 500.';
+    KC.refreshHeader();KC.renderProfile&&KC.renderProfile();
+    if(KC.updateCaptchaNote)KC.updateCaptchaNote();
+    if(KC.setBlockOverride)KC.setBlockOverride(false);
+    KC.toast('Paket '+pkg.label+' aktif — premium','ok');
+    return true;
+  }
+  function bindRedeem(inputId,btnId,msgId){
+    document.getElementById(btnId).addEventListener('click',function(){
+      redeem(document.getElementById(inputId).value,document.getElementById(msgId));
+      if(KC.store.profile&&KC.store.profile.usedExt.indexOf(document.getElementById(inputId).value.trim().toUpperCase())>-1){
+        document.getElementById(inputId).value='';
+      }
+    });
+    document.getElementById(inputId).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById(btnId).click();}});
+  }
+  bindRedeem('extCodeInput','extCodeBtn','extCodeMsg');
+  KC.redeemExtCode=redeem;
+  KC.renderShop=renderShop;
+})();
+</script>
+
+<script>
+/* ============ WITHDRAW + HISTORY + PROFILE ============ */
+(function(){
+  function wdOptions(){
+    var p=KC.store.profile;if(!p)return[];
+    var lv=KC.levelOf(p.exp);
+    return KC.WD_LIMITS.filter(function(w){return lv>=w.lv;});
+  }
+  function wdReady(){
+    var p=KC.store.profile;if(!p)return false;
+    return (p.invited||0)>=3 && !!p.missionJoined && p.checkDay>=7;
+  }
+  function setPill(id,ok,detail){
+    var el=document.getElementById(id);if(!el)return;
+    el.className='req-pill '+(ok?'ok':'no');
+    el.textContent=ok?('Terpenuhi'+(detail?' · '+detail:'')):('Belum'+(detail?' · '+detail:''));
+  }
+  function renderReq(){
+    var p=KC.store.profile;if(!p)return;
+    setPill('wdReq1',(p.invited||0)>=3,(p.invited||0)+'/3 teman');
+    setPill('wdReq2',!!p.missionJoined,'saluran');
+    setPill('wdReq3',p.checkDay>=7,'hari '+p.checkDay+'/7');
+  }
+  function renderWithdraw(){
+    var p=KC.store.profile;if(!p)return;
+    var lv=KC.levelOf(p.exp);
+    var max=KC.maxWithdraw(lv);
+    renderReq();
+    var ready=wdReady();
+    var note=document.getElementById('wdLimitNote');
+    if(ready){
+      note.textContent='Level '+lv+' — penarikan maksimal '+KC.fmtRp(max)+' per transaksi. Saldo kamu: '+p.balance.toLocaleString('id-ID')+'. Syarat sudah lengkap, silakan ajukan penarikan.';
+      note.style.background='var(--success-soft)';note.style.borderColor='var(--success)';note.style.color='var(--success)';
+    }else{
+      note.textContent='Syarat belum lengkap. Selesaikan: undang 3 teman, gabung saluran WhatsApp resmi, dan check-in sampai hari ke-7 sebelum tombol penarikan aktif.';
+      note.style.background='';note.style.borderColor='';note.style.color='';
+    }
+    document.getElementById('wdBtn').disabled=!ready;
+    var sel=document.getElementById('wdNominal');
+    sel.innerHTML='';
+    wdOptions().forEach(function(w){
+      var opt=document.createElement('option');
+      opt.value=w.max;opt.textContent=w.label+' ('+w.max.toLocaleString('id-ID')+')';
+      sel.appendChild(opt);
+    });
+    document.getElementById('wdResult').classList.add('hidden');
+    document.getElementById('wdMsg').textContent='';
+  }
+  function randomWdCode(){
+    var s='KC-';var d='0123456789';
+    for(var i=0;i<6;i++)s+=d[Math.floor(Math.random()*10)];
+    return s;
+  }
+  function pickCode(nominal){
+    var pool=KC.WD_CODES[nominal]||[];
+    var p=KC.store.profile;
+    for(var i=0;i<pool.length;i++){if(p.usedWd.indexOf(pool[i])===-1)return pool[i];}
+    return randomWdCode();
+  }
+  document.getElementById('wdBtn').addEventListener('click',function(){
+    var p=KC.store.profile;if(!p)return;
+    if(KC.isBlocked()){KC.checkBlock();return;}
+    var msg=document.getElementById('wdMsg');
+    if(!KC.wdReady()){msg.className='captcha-msg err';msg.textContent='Lengkapi syarat terlebih dahulu: Undang 3 teman + Join Saluran WhatsApp + Check-in sampai hari ke-7.';return;}
+    var nominal=parseInt(document.getElementById('wdNominal').value,10);
+    var name=document.getElementById('wdName').value.trim();
+    var acc=document.getElementById('wdAccount').value.trim();
+    if(!name||!acc){msg.className='captcha-msg err';msg.textContent('Nama penerima dan nomor tujuan wajib diisi.');return;}
+    if(p.balance<nominal){msg.className='captcha-msg err';msg.textContent('Saldo tidak mencukupi untuk nominal ini.');return;}
+    var code=pickCode(nominal);
+    p.usedWd.push(code);
+    p.balance-=nominal;
+    p.exp+=15;
+    p.withdrawals.push({code:code,nominal:nominal,name:name,account:acc,ts:Date.now()});
+    KC.addHistory(p,'wd','Penarikan '+KC.fmtRp(nominal)+' — kode '+code+' (+15 EXP)',-nominal);
+    KC.save();
+    msg.className='captcha-msg ok';msg.textContent='Permintaan tercatat. Simpan kode unik di bawah.';
+    document.getElementById('wdCodeText').textContent=code;
+    document.getElementById('wdResult').classList.remove('hidden');
+    document.getElementById('wdResult').dataset.code=code;
+    KC.refreshHeader();
+  });
+  document.getElementById('wdWaBtn').addEventListener('click',function(){
+    var p=KC.store.profile;if(!p)return;
+    var last=(p.withdrawals&&p.withdrawals.length)?p.withdrawals[p.withdrawals.length-1]:null;
+    var code=last?last.code:document.getElementById('wdCodeText').textContent;
+    var lines=[
+      'Halo admin KiniCuan, saya mengajukan penarikan saldo.',
+      '',
+      'Kode unik: '+code,
+      'Nominal: '+(last?KC.fmtRp(last.nominal):''),
+      'Nama akun: '+p.name,
+      'Nama penerima: '+(last?last.name:''),
+      'Nomor tujuan (rekening / e-wallet): '+(last?last.account:'')
+    ];
+    lines.push('','Mohon segera diproses, terima kasih.');
+    window.open('https://wa.me/'+KC.WA_ADMIN+'?text='+encodeURIComponent(lines.join('\n')),'_blank');
+  });
+
+  function renderHistory(){
+    var p=KC.store.profile;if(!p)return;
+    var box=document.getElementById('histList');
+    box.innerHTML='';
+    if(!p.history.length){box.innerHTML='<div class="empty">Belum ada aktivitas.</div>';return;}
+    p.history.forEach(function(h){
+      var item=document.createElement('div');item.className='hist-item';
+      var ico=document.createElement('div');ico.className='hist-ico';
+      var iconMap={earn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+        checkin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+        mission:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-1L3 20l1.2-4.2A8.4 8.4 0 1 1 21 11.5z"/></svg>',
+        invite:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
+        wd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/></svg>',
+        extend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>',
+        auth:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>'};
+      ico.innerHTML=iconMap[h.type]||iconMap.auth;
+      var txt=document.createElement('div');txt.className='ht';
+      var b=document.createElement('b');b.textContent=h.text;
+      var s=document.createElement('small');s.textContent=KC.fmtTime(h.ts);
+      txt.appendChild(b);txt.appendChild(s);
+      var amt=document.createElement('div');amt.className='hist-amt '+(h.amount>=0?'pos':'neg');
+      amt.textContent=(h.amount>=0?'+':'')+h.amount.toLocaleString('id-ID');
+      item.appendChild(ico);item.appendChild(txt);item.appendChild(amt);
+      box.appendChild(item);
+    });
+  }
+
+  function renderProfile(){
+    var p=KC.store.profile;if(!p)return;
+    var lv=KC.levelOf(p.exp);
+    document.getElementById('profAvatar').textContent=(p.name||'K').charAt(0).toUpperCase();
+    document.getElementById('profName').textContent=p.name;
+    document.getElementById('profEmail').textContent=KC.store.account?KC.store.account.email:'—';
+    document.getElementById('profPhone').textContent=KC.store.account?KC.store.account.phone:'—';
+    document.getElementById('profBalance').textContent=p.balance.toLocaleString('id-ID');
+    document.getElementById('profLevel').textContent=lv;
+    document.getElementById('profExp').textContent=p.exp;
+    var nxt=KC.nextLevel(lv);
+    document.getElementById('profNextLv').textContent=nxt||'—';
+    if(nxt){
+      var prev=0;
+      for(var i=0;i<KC.EXP_NEED.length;i++){if(KC.EXP_NEED[i][0]===lv)prev=KC.EXP_NEED[i][1];}
+      var pct=Math.min(100,Math.round((p.exp-prev)/(nxtPrev(nxt)-prev)*100));
+      document.getElementById('profProgBar').style.width=pct+'%';
+      document.getElementById('profProgText').textContent=(p.exp-prev)+' / '+(nxtPrev(nxt)-prev)+' EXP ke Level '+nxt;
+    }else{
+      document.getElementById('profProgBar').style.width='100%';
+      document.getElementById('profProgText').textContent='Maksimal level tercapai.';
+    }
+    document.getElementById('profWdLimit').textContent=KC.fmtRp(KC.maxWithdraw(lv));
+    document.getElementById('profPremium').textContent=KC.isPremium()?'Premium aktif':'Belum premium';
+    var pl=document.getElementById('profInviteLink');
+    if(pl&&KC.inviteLink)pl.textContent=KC.inviteLink();
+    var pic=document.getElementById('profInviteCount');
+    if(pic)pic.textContent=p.invited||0;
+    if(p.extension.permanent){
+      document.getElementById('profExpiry').textContent='Permanen';
+      document.getElementById('profStatus').textContent='Tidak pernah diblokir';
+    }else{
+      document.getElementById('profExpiry').textContent=new Date(p.extension.until).toLocaleString('id-ID');
+      document.getElementById('profStatus').textContent=KC.isBlocked()?'Diblokir':'Aktif';
+    }
+  }
+  function nxtPrev(lv){for(var i=0;i<KC.EXP_NEED.length;i++){if(KC.EXP_NEED[i][0]===lv)return KC.EXP_NEED[i][1];}return 0;}
+
+  KC.renderWithdraw=renderWithdraw;
+  KC.renderHistory=renderHistory;
+  KC.renderProfile=renderProfile;
+  KC.wdReady=wdReady;
+})();
+</script>
+</body>
+</html>
